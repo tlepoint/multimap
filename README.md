@@ -92,19 +92,26 @@ http://gmplib.org
 
 Modify the Makefile accordingly and type:
 
+```
 $ make
 $ ./multimap
+```
 
 The program demonstrates how a setup phase is performed, and simulates the
 view of N users. The parameters can me modified in Multimap.h and main.cpp.
 Notice the following parameters:
 
 in main.cpp
-				#define LINUX (if you run on Linux, uses CLOCK_MONOTONIC)
-				#define VERBOSE (if you want to verbose the code)
+
+```#define LINUX```
+(if you run on Linux, uses CLOCK_MONOTONIC)
+
+```#define VERBOSE```
+(if you want to verbose the code)
 
 in Multimap.h
-				#define INSTANTIATION
+
+```#define INSTANTIATION```
 
 According to the value of INSTANTIATION, different parameters set are used.
 

@@ -134,3 +134,11 @@ NB 2: Note that the Setup party is only to be run once by a (trusted) third
 party. One might consider it to be accessible as a common (public) knowledge
 by all the parties; therefore this step can be forgotten when considering the
 performances of the multilinear maps.
+
+LICENSE
+-------
+
+This code is licensed under Creative Commons, Attribution, Non-Commercial, No-
+Derivs http://creativecommons.org/licenses/by-nc-nd/3.0/
+
+

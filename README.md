@@ -138,7 +138,7 @@ performances of the multilinear maps.
 LICENSE
 -------
 
-This code is licensed under Creative Commons, Attribution, Non-Commercial, No-
-Derivs http://creativecommons.org/licenses/by-nc-nd/3.0/
+This code is licensed under Creative Commons, Attribution, NonCommercial, 
+NoDerivs http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 

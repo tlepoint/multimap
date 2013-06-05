@@ -9,7 +9,7 @@
 #include <string>
 #include <sys/time.h>
 
-#define INSTANTIATION 1 		// 0- Toy, 1- Small, 2- Medium, 3- Large, 4- Extra
+#define INSTANTIATION 1 		// 1- Small, 2- Medium, 3- Large, 4- Extra
 
 #define kappa 6					// Maximal level
 #define hBits 80 				// size of h_i's in v = BETA
@@ -19,51 +19,38 @@
 #define sessionKeyBits 160 		// Bitsize of session key to derive
 #define bound sessionKeyBits 	// bound to decide if it is zero or not
 								// bound must be >= sessionKeyBits
+#define alpha 80				// size of g_i's and elements of A
 
-#if INSTANTIATION == 0
-	#define alpha 10				// size of g_i's and elements of A
-#else
-	#define alpha 80				// size of g_i's and elements of A
-#endif
-
-#if INSTANTIATION == 0 			// Toy
-
-	#define N  165  			// number of p_i's
-	#define delta 12 			// sqrt(N)
-	#define eta 757				// size of p_i's
-	#define etp 757				// Size of primes in p_i's; it is better to have eta%etp=0
-	#define rho 27				// size of r_i's in xp_i's and y
-
-#elif INSTANTIATION == 1 		// Small
+#if INSTANTIATION == 1 		// Small
 
 	#define N  540  			// number of p_i's
 	#define delta 23 			// sqrt(N)
-	#define eta 1779			// size of p_i's
-	#define etp 450				// Size of primes in p_i's; it is better to have eta%etp=0
+	#define eta 1838			// size of p_i's
+	#define etp 460				// Size of primes in p_i's; it is better to have eta%etp=0
 	#define rho 41				// size of r_i's in xp_i's and y
 
 #elif INSTANTIATION == 2 		// Medium
 
-	#define N  2100  			// number of p_i's
+	#define N  2085  			// number of p_i's
 	#define delta 45 			// sqrt(N)
-	#define eta 1974			// size of p_i's
-	#define etp 500				// Size of primes in p_i's; it is better to have eta%etp=0
+	#define eta 2043			// size of p_i's
+	#define etp 409				// Size of primes in p_i's; it is better to have eta%etp=0
 	#define rho 56				// size of r_i's in xp_i's and y
 
 #elif INSTANTIATION == 3 		// Large
 
-	#define N  8355  			// number of p_i's
-	#define delta 91 			// sqrt(N)
-	#define eta 2182			// size of p_i's
-	#define etp 550				// Size of primes in p_i's; it is better to have eta%etp=0
+	#define N  8250  			// number of p_i's
+	#define delta 90 			// sqrt(N)
+	#define eta 2261			// size of p_i's
+	#define etp 453				// Size of primes in p_i's; it is better to have eta%etp=0
 	#define rho 72				// size of r_i's in xp_i's and y
 
 #elif INSTANTIATION == 4 		// Extra
 
-	#define N  26265  			// number of p_i's
-	#define delta 162 			// sqrt(N)
-	#define eta 2351			// size of p_i's
-	#define etp 600				// Size of primes in p_i's; it is better to have eta%etp=0
+	#define N  26115  			// number of p_i's
+	#define delta 161 			// sqrt(N)
+	#define eta 2438			// size of p_i's
+	#define etp 407				// Size of primes in p_i's; it is better to have eta%etp=0
 	#define rho 85				// size of r_i's in xp_i's and y
 
 #endif

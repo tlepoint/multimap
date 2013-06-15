@@ -214,11 +214,12 @@ MMKey::MMKey(gmp_randclass* random) {
 	// Generate z
 	startTime=currentTime();
 	std::cout << "Generate z and zinv: " << std::flush;
-	do {
+	int ret;
+  do {
 		z = rng->get_z_range(x0);
-		mpz_invert(zinv.get_mpz_t(), z.get_mpz_t(), x0.get_mpz_t());
+		ret = mpz_invert(zinv.get_mpz_t(), z.get_mpz_t(), x0.get_mpz_t());
 	}
-	while (zinv == 0);
+	while (ret == 0);
 	std::cout << (double)(currentTime()-startTime) << "s" << std::endl;
 	
 	// Generate A

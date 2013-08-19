@@ -416,15 +416,21 @@ long MMKey::get_noise(const mpz_class& c, long degree)
 }
 
 /*
-	Return w = (c*z^(kappa-degree))*v mod x0
+	Return w = (c*y^(kappa-degree))*v mod x0
+
+	We multiply by y^(kappa-degree) to transform the degree-level
+	encoding into a kappa-level encoding, so that the z^kappa mask
+	included in v can be canceled out
 */
 mpz_class MMKey::zero_test(const mpz_class &c, long degree)
 {
 	assert(degree<=kappa);
-	mpz_class value = modNear(c*v,x0);
+
+	mpz_class value = c;
 
 	for (long i=kappa-degree; i>0; i--)
 		value = modNear(value*y, x0);
+	value = modNear(value*v,x0);
 
 	return value;
 }

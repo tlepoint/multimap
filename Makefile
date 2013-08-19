@@ -1,7 +1,7 @@
 CC 		= g++
-CCFLAGS = -Wall -O3 -fopenmp -lrt
-IFLAGS 	= 
-LFLAGS 	= -lgmpxx -lgmp
+CCFLAGS = -Wall -O3 -fopenmp #-lrt
+IFLAGS 	= -I/opt/local/include 
+LFLAGS 	= -L/opt/local/lib -lgmpxx -lgmp
 
 all: Multimap.cpp Multimap.h main.cpp Makefile
 	$(CC) $(CCFLAGS) $(IFLAGS) -c -o Multimap.o Multimap.cpp

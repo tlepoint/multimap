@@ -13,7 +13,6 @@
 
 #define kappa 6					// Maximal level
 #define hBits 80 				// size of h_i's in v = BETA
-#define ell 160 				// number of elements during encoding
 #define theta  15 				// number of non-zero elements in subset sum during rerand 
 
 #define sessionKeyBits 160 		// Bitsize of session key to derive

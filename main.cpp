@@ -9,7 +9,6 @@
 #define VERBOSE false			// Display additional information
 #define DISPLAY_MESSAGES false		// Decrypt & display the messages (only if VERBOSE==true)
 
-#define USERS kappa+1			// Number of Users: make sure (USERS-1) <= kappa
 
 std::ostream& operator<<(std::ostream& os, Ciphertext& c) {
     os << "<Ciphertext of degree=" << c.get_degree();

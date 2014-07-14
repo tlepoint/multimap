@@ -127,29 +127,29 @@ std::cout << std::flush;
 
 
 // How long could have been the sessionKey?
-#if VERBOSE
-	std::cout << "Tests if keys[i]-keys[j] \"=\" 0: " << std::endl;
-	long maxBits = 0, keyBits;
-	#pragma omp parallel for private(j, keyBits)
-	for (i=0; i<USERS; i++)
-		for (j=0; j<USERS; j++)
-		{
-			if (i != j) 
-			{
-				Ciphertext diff(*keys[i]);
-				diff-=(*keys[j]);
-				keyBits = key.nbBits(key.zero_test(diff.get_cval(), diff.get_degree()));
-				#pragma omp critical
-				{
-					if (keyBits > maxBits) maxBits = keyBits;
-				}
-				std::cout << ((keyBits < key.nbBits(key.get_x0())-bound) ? "true" : "false") << " ";
-				std::cout << std::flush;
-			}
-		}
-	std::cout << std::endl;
-	std::cout << "Maximum size of session key " << (key.nbBits(key.get_x0()) - maxBits) << " bits" << std::endl;
-#endif
+// #if VERBOSE
+// 	std::cout << "Tests if keys[i]-keys[j] \"=\" 0: " << std::endl;
+// 	long maxBits = 0, keyBits;
+// 	#pragma omp parallel for private(j, keyBits)
+// 	for (i=0; i<USERS; i++)
+// 		for (j=0; j<USERS; j++)
+// 		{
+// 			if (i != j) 
+// 			{
+// 				Ciphertext diff(*keys[i]);
+// 				diff-=(*keys[j]);
+// 				keyBits = key.nbBits(key.zero_test(diff.get_cval(), diff.get_degree()));
+// 				#pragma omp critical
+// 				{
+// 					if (keyBits > maxBits) maxBits = keyBits;
+// 				}
+// 				std::cout << ((keyBits < key.nbBits(key.get_x0())-bound) ? "true" : "false") << " ";
+// 				std::cout << std::flush;
+// 			}
+// 		}
+// 	std::cout << std::endl;
+// 	std::cout << "Maximum size of session key " << (key.nbBits(key.get_x0()) - maxBits) << " bits" << std::endl;
+// #endif
 
 
 	return 0;

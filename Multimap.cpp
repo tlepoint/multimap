@@ -222,38 +222,6 @@ MMKey::MMKey(gmp_randclass* random) {
 	while (ret == 0);
 	std::cout << (double)(currentTime()-startTime) << "s" << std::endl;
 	
-	// Generate A
-	std::cout << "Generate A: " << std::flush;
-	startTime=currentTime();
-	A = new mpz_class[ell*N];
-	for (i=0; i<ell; i++)
-		for (j=0; j<N; j++)
-			A[i*N+j] = generateRandom(alpha, rng);
-	std::cout << (double)(currentTime()-startTime) << "s" << std::endl;
-
-	// Generate the xp_i's
-	std::cout << "Generate the xp_i's: " << std::flush;
-	startTime=currentTime();
-	xp = new mpz_class[ell];
-	#pragma omp parallel for
-	for (i=0; i<ell; i++)
-		xp[i] = Encrypt_with_sk(A+i*N, rho, 0);
-	std::cout << (double)(currentTime()-startTime) << "s" << std::endl;
-
-	// Generate the varpi_i's
-	// Elements used for rerandomization, `x' in the article
-	std::cout << "Generate the varpi[j]_i's: " << std::flush;
-	startTime=currentTime();
-	varpi = new mpz_class[2*delta];
-
-	#pragma omp parallel for private(i)
-	for (i=0; i<delta; i++)
-	{
-		varpi[i] = Encrypt_with_sk((unsigned long) 0, rho, 0);
-		varpi[delta+i] = Encrypt_with_sk((unsigned long) alpha, rho, 1);
-	}	
-	std::cout << (double)(currentTime()-startTime) << "s" << std::endl;
-
 	// Generate y
 	std::cout << "Generate y: " << std::flush;
 	startTime=currentTime();
@@ -283,16 +251,18 @@ MMKey::MMKey(gmp_randclass* random) {
 }
 
 /*
-	Encrypt bit vector b using public key (subset sum)
+	Generate a random level-k encoding with \rho bits of randomness for the noise and \alpha bits of randomness for the plaintext
 */
-Ciphertext MMKey::Encrypt(bool b[ell])
-{
-	mpz_class c=0;
+Ciphertext MMKey::Sample(unsigned long k) {
+	long i;
 
-	for (long i=0; i<ell; i++)
-		if (b[i]) c += xp[i];
+	mpz_class* m = new mpz_class[N];
+	for (i=0; i<N; i++)
+		m[i] = generateRandom(alpha, rng);
 
-	return Ciphertext(this, mod(c, x0), 0);
+	mpz_class c = Encrypt_with_sk(m, rho, k);
+
+	return Ciphertext(this, mod(c, x0), k);
 }
 
 /*
@@ -381,6 +351,7 @@ mpz_class MMKey::reduce(const mpz_class &c)
 	return mod(c, x0);
 }
 
+// DO NOT NEED
 /*
 	Return public value y converted into a ciphertext
 */
@@ -450,27 +421,4 @@ bool MMKey::is_zero(const Ciphertext &c)
 {
 	mpz_class value = zero_test(c.get_cval(), c.get_degree());
 	return (nbBits(value)<(nbBits(x0)-bound)) ? 1 : 0;
-}
-
-/*
-	Rerandomize a ciphertext c
-*/
-Ciphertext MMKey::Rerand(const Ciphertext & c)
-{
-	assert(c.get_degree() == 1);
-	mpz_class cval = c.get_cval();
-	long i, j;
-
-	long indicesvarpi[theta];
-	for (i=0; i<theta; i++)
-	{
-		indicesvarpi[i] = rand()%(delta*delta);
-		for (j=0; j<i; j++)
-			if (indicesvarpi[j] == indicesvarpi[i]) i--; // restart this indicesvarpi[i].
-	}
-
-	for (i=0; i<theta; i++)
-		cval += varpi[indicesvarpi[i]%delta] * varpi[delta+indicesvarpi[i]/delta];
-	
-	return Ciphertext(this, mod(cval, x0), 1);
 }

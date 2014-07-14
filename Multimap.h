@@ -13,7 +13,6 @@
 
 #define kappa 6					// Maximal level
 #define hBits 80 				// size of h_i's in v = BETA
-#define ell 160 				// number of elements during encoding
 #define theta  15 				// number of non-zero elements in subset sum during rerand 
 
 #define sessionKeyBits 160 		// Bitsize of session key to derive
@@ -131,11 +130,8 @@ Contain:
 - private value `z' and `zkappa'=z^kappa
 - private value `zinv' = z^(-1) mod x0
 - pointer to private elements `g'
-- pointer to secret matrix `A'
-- pointer to public values `xp'
 - public value `y'
 - public zero-tester `v'
-- pointer to rerandomization values `varpi' (= x in the article)
 */
 class MMKey {
 private:
@@ -145,16 +141,13 @@ private:
 	mpz_class 		zinv; 			//	[N];
 	mpz_class* 		crtCoeff; 		//	[N];
 	mpz_class* 		g; 				//	[N];
-	mpz_class* 		A; 				//	[ell*N];
-	mpz_class* 		xp; 			//	[ell];
 	mpz_class 		y;
 	mpz_class 		v;
-	mpz_class* 		varpi; 			//	[2*delta];
 
 public:
 	MMKey(gmp_randclass* random);
 	~MMKey();
-	Ciphertext Encrypt(bool b[ell]);
+	Ciphertext Sample(unsigned long k);
 	mpz_class Encrypt_with_sk(mpz_class* m, long nbBits, long degree);
 	mpz_class Encrypt_with_sk(unsigned long m, long nbBits, long degree);
 	void Decrypt_with_sk(mpz_class* m, const Ciphertext& c);

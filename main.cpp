@@ -9,7 +9,6 @@
 #define VERBOSE false			// Display additional information
 #define DISPLAY_MESSAGES false		// Decrypt & display the messages (only if VERBOSE==true)
 
-#define USERS kappa+1			// Number of Users: make sure (USERS-1) <= kappa
 
 std::ostream& operator<<(std::ostream& os, Ciphertext& c) {
     os << "<Ciphertext of degree=" << c.get_degree();
@@ -38,7 +37,6 @@ std::ostream& operator<<(std::ostream& os, Ciphertext& c) {
 
 int main()
 {
-	long i;
 
 #if LINUX
 	timespec start, finish;
@@ -69,13 +67,11 @@ int main()
 	std::cout << "y=" << y << std::endl;
 	std::cout << std::flush;
 	
-	// USERS-multipartite Diffie Hellman
-	Ciphertext* l0[USERS];
-	Ciphertext* l1[USERS];
-	Ciphertext* keys[USERS];
+	// kappa level-1 encodings to generate and multiply
+	Ciphertext* encodings[kappa];
+	Ciphertext* result;
 	
 	long j;
-	bool b[USERS][ell];
 	
 #if LINUX
 	clock_gettime(CLOCK_MONOTONIC, &start);
@@ -83,29 +79,20 @@ int main()
 	startTime=currentTime();
 #endif
 
-	for (j=0; j<USERS; j++)
+	// generate kappa random level-1 encodings
+	//TODO
+	for (j=0; j<kappa; j++)
 	{
-		for (i=0; i<ell; i++)
-			b[j][i] = rand()%2;
-		l0[j] = new Ciphertext(key.Encrypt(b[j])); // Secret value of each user
+		// generate random level-1 encoding
+		encodings[j] = new Ciphertext(key.Sample(1)); // Secret value of each user
 
-		std::cout << "User #" << j << " (level 0): " << *l0[j] << std::endl; 
 	}
-	std::cout << std::endl;
 
-	for (j=0; j<USERS; j++)
-	{
-		Ciphertext c = (*l0[j])*y;
-		l1[j] = new Ciphertext(key.Rerand(c)); // Public value of each user
-
-		std::cout << "User #" << j << " (level 1): " << *l1[j] << std::endl; 
-	}
-	std::cout << std::endl;
 #if LINUX
 	clock_gettime(CLOCK_MONOTONIC, &finish);
-	std::cout << "(Samp+enc+rerand): " << (double)((finish.tv_nsec-start.tv_nsec)/1000000000.0+(finish.tv_sec-start.tv_sec)) << "s" << std::endl;
+	std::cout << "(Encoding generation): " << (double)((finish.tv_nsec-start.tv_nsec)/1000000000.0+(finish.tv_sec-start.tv_sec)) << "s" << std::endl;
 #else
-	std::cout << "(Samp+enc+rerand): " << (double)(currentTime()-startTime) << "s" << std::endl;
+	std::cout << "(Encoding generation): " << (double)(currentTime()-startTime) << "s" << std::endl;
 #endif
 	std::cout << std::flush;
 
@@ -116,20 +103,18 @@ int main()
 	startTime=currentTime();
 #endif
 
-	for (j=0; j<USERS; j++)
+	// multiply all encodings
+
+	result = new Ciphertext((*encodings[0]));
+	for (j=1; j<kappa; j++)
 	{
-		keys[j] = new Ciphertext((*l0[j]));
-		for (i=0; i<USERS; i++)
-			if (i != j) *keys[j] *= (*l1[i]); 
-			// Each user compute the (USERS-1) products using public keys of the other users
+		*result *= (*encodings[j]);
 
-		std::cout << "User #" << j << " (level " << (USERS-1) << "): " << *keys[j] << std::endl; 
 	}
-	std::cout << std::endl;
 
-	std::cout << "Session keys of " << bound << " bits" << std::endl;
-	for (j=0; j<USERS; j++)
-		std::cout << "User #" << j << ": " << (*keys[j]).deriveSessionKey() << std::endl;
+	// perform extraction
+
+	std::cout << "Extracted value:" << (*result).deriveSessionKey() << std::endl;
 
 #if LINUX
 	clock_gettime(CLOCK_MONOTONIC, &finish);
@@ -142,29 +127,29 @@ std::cout << std::flush;
 
 
 // How long could have been the sessionKey?
-#if VERBOSE
-	std::cout << "Tests if keys[i]-keys[j] \"=\" 0: " << std::endl;
-	long maxBits = 0, keyBits;
-	#pragma omp parallel for private(j, keyBits)
-	for (i=0; i<USERS; i++)
-		for (j=0; j<USERS; j++)
-		{
-			if (i != j) 
-			{
-				Ciphertext diff(*keys[i]);
-				diff-=(*keys[j]);
-				keyBits = key.nbBits(key.zero_test(diff.get_cval(), diff.get_degree()));
-				#pragma omp critical
-				{
-					if (keyBits > maxBits) maxBits = keyBits;
-				}
-				std::cout << ((keyBits < key.nbBits(key.get_x0())-bound) ? "true" : "false") << " ";
-				std::cout << std::flush;
-			}
-		}
-	std::cout << std::endl;
-	std::cout << "Maximum size of session key " << (key.nbBits(key.get_x0()) - maxBits) << " bits" << std::endl;
-#endif
+// #if VERBOSE
+// 	std::cout << "Tests if keys[i]-keys[j] \"=\" 0: " << std::endl;
+// 	long maxBits = 0, keyBits;
+// 	#pragma omp parallel for private(j, keyBits)
+// 	for (i=0; i<USERS; i++)
+// 		for (j=0; j<USERS; j++)
+// 		{
+// 			if (i != j) 
+// 			{
+// 				Ciphertext diff(*keys[i]);
+// 				diff-=(*keys[j]);
+// 				keyBits = key.nbBits(key.zero_test(diff.get_cval(), diff.get_degree()));
+// 				#pragma omp critical
+// 				{
+// 					if (keyBits > maxBits) maxBits = keyBits;
+// 				}
+// 				std::cout << ((keyBits < key.nbBits(key.get_x0())-bound) ? "true" : "false") << " ";
+// 				std::cout << std::flush;
+// 			}
+// 		}
+// 	std::cout << std::endl;
+// 	std::cout << "Maximum size of session key " << (key.nbBits(key.get_x0()) - maxBits) << " bits" << std::endl;
+// #endif
 
 
 	return 0;

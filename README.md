@@ -138,6 +138,6 @@ performances of the multilinear maps.
 LICENSE
 -------
 
-This code is liboqs is licensed under the MIT License; see LICENSE.txt for details.
+This code is licensed under the MIT License; see LICENSE.txt for details.
 
 
